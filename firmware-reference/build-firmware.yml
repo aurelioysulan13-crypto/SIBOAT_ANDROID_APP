@@ -1,0 +1,19 @@
+name: Build ESP32 Firmware Reference
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Firmware reference
+        run: |
+          echo "ESP32 main firmware:"
+          ls -l firmware-reference/A1a_ESP32_MAIN_FIRMWARE.ino
+          echo "ESP32-CAM firmware:"
+          ls -l firmware-reference/A1b_ESP32_CAM_FIRMWARE.ino
