@@ -36,19 +36,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Window window = getWindow();
-        window.setNavigationBarColor(android.graphics.Color.rgb(8, 13, 36));
+        window.setNavigationBarColor(
+                android.graphics.Color.rgb(8, 13, 36)
+        );
 
         webView = new WebView(this);
         setContentView(webView);
 
         WebView.setWebContentsDebuggingEnabled(false);
 
-        WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
-                .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
-                .build();
+        WebViewAssetLoader assetLoader =
+                new WebViewAssetLoader.Builder()
+                        .addPathHandler(
+                                "/assets/",
+                                new WebViewAssetLoader.AssetsPathHandler(this)
+                        )
+                        .build();
 
         WebSettings s = webView.getSettings();
+
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);
@@ -59,59 +67,79 @@ public class MainActivity extends AppCompatActivity {
         s.setSupportMultipleWindows(false);
         s.setBuiltInZoomControls(false);
         s.setDisplayZoomControls(false);
-        s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        s.setMixedContentMode(
+                WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        );
 
         CookieManager.getInstance().setAcceptCookie(true);
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        CookieManager.getInstance()
+                .setAcceptThirdPartyCookies(webView, true);
 
         webView.setWebViewClient(new WebViewClient() {
+
             @Override
             public WebResourceResponse shouldInterceptRequest(
                     WebView view,
                     WebResourceRequest request) {
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+
+                return assetLoader.shouldInterceptRequest(
+                        request.getUrl()
+                );
             }
 
             @Override
             public WebResourceResponse shouldInterceptRequest(
                     WebView view,
                     String url) {
-                return assetLoader.shouldInterceptRequest(Uri.parse(url));
+
+                return assetLoader.shouldInterceptRequest(
+                        Uri.parse(url)
+                );
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(
                     WebView view,
                     WebResourceRequest request) {
+
                 return false;
             }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
+
             @Override
-            public void onPermissionRequest(final PermissionRequest request) {
+            public void onPermissionRequest(
+                    final PermissionRequest request) {
+
                 runOnUiThread(() -> {
+
                     boolean camera = false;
 
                     for (String resource : request.getResources()) {
-                        if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(resource)) {
+                        if (PermissionRequest.RESOURCE_VIDEO_CAPTURE
+                                .equals(resource)) {
                             camera = true;
                             break;
                         }
                     }
 
-                    if (camera && ContextCompat.checkSelfPermission(
-                            MainActivity.this,
-                            Manifest.permission.CAMERA
-                    ) != PackageManager.PERMISSION_GRANTED) {
+                    if (camera &&
+                            ContextCompat.checkSelfPermission(
+                                    MainActivity.this,
+                                    Manifest.permission.CAMERA
+                            ) != PackageManager.PERMISSION_GRANTED) {
 
                         pendingPermissionRequest = request;
 
                         ActivityCompat.requestPermissions(
                                 MainActivity.this,
-                                new String[]{Manifest.permission.CAMERA},
+                                new String[]{
+                                        Manifest.permission.CAMERA
+                                },
                                 CAMERA_REQUEST
                         );
+
                     } else {
                         request.grant(request.getResources());
                     }
@@ -135,13 +163,22 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     intent = fileChooserParams.createIntent();
                 } catch (Exception e) {
-                    intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent = new Intent(
+                            Intent.ACTION_OPEN_DOCUMENT
+                    );
+
+                    intent.addCategory(
+                            Intent.CATEGORY_OPENABLE
+                    );
+
                     intent.setType("*/*");
                 }
 
                 try {
-                    startActivityForResult(intent, FILE_REQUEST);
+                    startActivityForResult(
+                            intent,
+                            FILE_REQUEST
+                    );
                 } catch (Exception e) {
                     filePathCallback = null;
                     return false;
@@ -172,11 +209,13 @@ public class MainActivity extends AppCompatActivity {
                 pendingPermissionRequest != null) {
 
             if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] ==
+                            PackageManager.PERMISSION_GRANTED) {
 
                 pendingPermissionRequest.grant(
                         pendingPermissionRequest.getResources()
                 );
+
             } else {
                 pendingPermissionRequest.deny();
             }
@@ -202,18 +241,21 @@ public class MainActivity extends AppCompatActivity {
 
             Uri[] results = null;
 
-            if (resultCode == Activity.RESULT_OK && data != null) {
+            if (resultCode == Activity.RESULT_OK &&
+                    data != null) {
 
                 if (data.getClipData() != null) {
 
-                    int count = data.getClipData().getItemCount();
+                    int count =
+                            data.getClipData().getItemCount();
 
                     results = new Uri[count];
 
                     for (int i = 0; i < count; i++) {
-                        results[i] = data.getClipData()
-                                .getItemAt(i)
-                                .getUri();
+                        results[i] =
+                                data.getClipData()
+                                        .getItemAt(i)
+                                        .getUri();
                     }
 
                 } else if (data.getData() != null) {
@@ -231,8 +273,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
+
+        if (webView != null &&
+                webView.canGoBack()) {
+
             webView.goBack();
+
         } else {
             super.onBackPressed();
         }
@@ -240,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+
         if (webView != null) {
             webView.loadUrl("about:blank");
             webView.stopLoading();
@@ -248,4 +295,4 @@ public class MainActivity extends AppCompatActivity {
 
         super.onDestroy();
     }
-    }
+            }
