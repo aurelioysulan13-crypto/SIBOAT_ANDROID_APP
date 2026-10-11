@@ -74,4 +74,4 @@ public class MainActivity extends AppCompatActivity {
     @Override protected void onActivityResult(int requestCode,int resultCode,@Nullable Intent data){super.onActivityResult(requestCode,resultCode,data);if(requestCode==FILE_REQUEST&&filePathCallback!=null){Uri[] results=null;if(resultCode==Activity.RESULT_OK&&data!=null){if(data.getClipData()!=null){int count=data.getClipData().getItemCount();results=new Uri[count];for(int i=0;i<count;i++)results[i]=data.getClipData().getItemAt(i).getUri();}else if(data.getData()!=null)results=new Uri[]{data.getData()};}filePathCallback.onReceiveValue(results);filePathCallback=null;}}
     @Override public void onBackPressed(){if(usbBridge!=null&&usbBridge.isConnected()){usbBridge.disconnect();return;}if(webView!=null&&webView.canGoBack())webView.goBack();else super.onBackPressed();}
     @Override protected void onDestroy(){if(usbBridge!=null)usbBridge.destroy();if(webView!=null){webView.loadUrl("about:blank");webView.stopLoading();webView.removeJavascriptInterface("SIBOAT_ANDROID_USB");webView.destroy();}super.onDestroy();}
-                                 }
+}
